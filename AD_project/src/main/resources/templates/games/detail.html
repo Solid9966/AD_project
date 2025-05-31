@@ -2,109 +2,169 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${game.title}">게임 상세</title>
+    <title th:text="${game.title} + ' 상세보기'">게임 상세</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            padding: 30px;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f5f7fa;
+            padding: 40px;
+            margin: 0;
         }
 
-        .card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 25px;
-            max-width: 700px;
+        .container {
+            max-width: 800px;
             margin: auto;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        h2, h3 {
+        h2 {
+            margin-bottom: 10px;
             color: #2c3e50;
         }
 
-        a.button-link {
+        .game-description {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .button-link {
             display: inline-block;
-            margin-top: 10px;
-            padding: 8px 15px;
             background-color: #3498db;
-            color: white;
+            color: #fff;
+            padding: 10px 16px;
             border-radius: 5px;
             text-decoration: none;
+            margin-bottom: 20px;
         }
 
-        .review {
-            border-top: 1px solid #ddd;
-            padding: 10px 0;
-        }
-
-        .review strong {
-            color: #333;
+        .rating {
+            font-size: 18px;
+            margin-top: 25px;
+            font-weight: bold;
         }
 
         .stars {
             color: #f1c40f;
         }
 
-        form input, form textarea {
+        .review-section {
+            margin-top: 30px;
+        }
+
+        .review {
+            border-top: 1px solid #eee;
+            padding: 15px 0;
+        }
+
+        .review strong {
+            color: #333;
+        }
+
+        form textarea, form input[type="number"] {
             width: 100%;
-            padding: 8px;
-            margin: 8px 0;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
             box-sizing: border-box;
+            font-size: 14px;
         }
 
         form button {
             background-color: #2ecc71;
             color: white;
-            padding: 10px 15px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 15px;
         }
 
         form button:hover {
             background-color: #27ae60;
         }
+
+        .review-actions button,
+        .review-actions a {
+            margin-top: 8px;
+            display: inline-block;
+            padding: 6px 12px;
+            font-size: 13px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .review-actions form {
+            display: inline;
+        }
+
+        .review-actions button {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            margin-right: 6px;
+        }
+
+        .review-actions a {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .review-actions button:hover {
+            background-color: #c0392b;
+        }
+
+        .review-actions a:hover {
+            background-color: #d35400;
+        }
     </style>
 </head>
 <body>
 
-<div class="card">
+<div class="container">
     <h2 th:text="${game.title}">게임 제목</h2>
-    <p th:text="${game.description}">게임 설명</p>
+    <p class="game-description" th:text="${game.description}">게임 설명</p>
     <a class="button-link" th:href="${game.url}" target="_blank">공식 홈페이지 방문</a>
 
-    <h3 style="margin-top: 30px;">평균 별점:
+    <div class="rating">
+        평균 별점:
         <span class="stars">
             <span th:each="star : ${#numbers.sequence(1, averageRating > 5 ? 5 : (averageRating > 0 ? averageRating.intValue() : 0))}">&#9733;</span>
         </span>
         (<span th:text="${averageRating}">0.0</span>점)
-    </h3>
+    </div>
 
-    <h3>후기</h3>
-    <div th:each="r : ${reviews}" class="review">
-        <strong th:text="${r.author}">작성자</strong><br>
-        <span th:text="${r.content}">내용</span><br>
-        <span class="stars">
-            <span th:each="s : ${#numbers.sequence(1, r.rating)}">&#9733;</span>
-        </span>
-        (<span th:text="${r.rating}">별점</span>점)
+    <div class="review-section">
+        <h3>후기</h3>
+        <div th:each="r : ${reviews}" class="review">
+            <strong th:text="${r.author}">작성자</strong><br>
+            <span th:text="${r.content}">내용</span><br>
+            <span class="stars">
+                <span th:each="s : ${#numbers.sequence(1, r.rating)}">&#9733;</span>
+            </span>
+            (<span th:text="${r.rating}">별점</span>점)
 
-        <div style="margin-top: 5px;">
-            <form th:action="@{'/reviews/' + ${r.id} + '/delete'}" method="post" style="display:inline">
-                <button type="submit">삭제</button>
-            </form>
-            <a th:href="@{'/reviews/' + ${r.id} + '/edit'}" class="button-link" style="background:#e67e22;">수정</a>
+            <div class="review-actions">
+                <form th:action="@{'/reviews/' + ${r.id} + '/delete'}" method="post">
+                    <button type="submit">삭제</button>
+                </form>
+                <a th:href="@{'/reviews/' + ${r.id} + '/edit'}">수정</a>
+            </div>
         </div>
     </div>
 
-    <h3 style="margin-top: 30px;">후기 작성</h3>
-    <form th:action="@{'/games/' + ${game.id} + '/reviews'}" method="post" th:object="${reviewForm}">
-        <input type="text" th:field="*{author}" placeholder="작성자" required>
-        <textarea th:field="*{content}" placeholder="후기 내용" required></textarea>
-        <input type="number" th:field="*{rating}" min="1" max="5" placeholder="별점 (1~5)" required>
-        <button type="submit">등록</button>
-    </form>
+    <div class="review-section">
+        <h3 style="margin-top: 30px;">후기 작성</h3>
+        <form th:action="@{'/games/' + ${game.id} + '/reviews'}" method="post" th:object="${reviewForm}">
+            <textarea th:field="*{content}" placeholder="후기 내용을 입력하세요" required></textarea>
+            <input type="number" th:field="*{rating}" min="1" max="5" placeholder="별점 (1~5)" required>
+            <button type="submit">등록</button>
+        </form>
+    </div>
 </div>
 
 </body>

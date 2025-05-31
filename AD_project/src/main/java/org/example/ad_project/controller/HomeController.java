@@ -1,4 +1,6 @@
 package org.example.ad_project.controller;
+
+import jakarta.servlet.http.HttpSession;
 import org.example.ad_project.entity.Game;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +20,15 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String showGameList(Model model) {
-        model.addAttribute("games", gameRepository.findAll()); // 여기서 games 값을 가져와서 전달
-        return "games/home"; // templates/games/home.html 렌더링
+    public String showGameList(Model model, HttpSession session) {
+        Object loggedInUser = session.getAttribute("loggedInUser");
+
+        // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
+        if (loggedInUser == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("games", gameRepository.findAll());
+        return "games/home"; // 로그인한 경우 게임 목록 페이지로 이동
     }
 }

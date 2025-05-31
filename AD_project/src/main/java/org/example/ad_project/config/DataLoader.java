@@ -21,9 +21,10 @@ public class DataLoader {
 
     @PostConstruct
     public void loadSampleData() {
-        // 순서 중요: 리뷰 먼저 삭제 후 게임 삭제
+        if (gameRepository.count() > 0) return;  // ⚠ 이미 데이터 있으면 중단
+
+        gameRepository.deleteAll();  // 선택: 진짜 재초기화 원할 경우만 유지
         reviewRepository.deleteAll();
-        gameRepository.deleteAll();
 
         gameRepository.saveAll(List.of(
                 new Game("발로란트", "FPS 게임", "https://playvalorant.com/ko-kr/"),
@@ -31,5 +32,6 @@ public class DataLoader {
                 new Game("FC 온라인", "스포츠 게임", "https://fconline.nexon.com/main/index")
         ));
     }
+
 }
 
